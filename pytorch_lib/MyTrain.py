@@ -175,11 +175,11 @@ if __name__ == '__main__':
     parser.add_argument('--decay_epoch', type=int, default=50, help='every n epochs decay learning rate')
     parser.add_argument('--model', type=str, default='DGNet', choices=['DGNet', 'DGNet-S'])
     parser.add_argument('--load', type=str, default=None, help='train from checkpoints')
-    parser.add_argument('--train_root', type=str, default='./dataset/TrainDataset/',
+    parser.add_argument('--train_root', type=str, default='../dataset/TestDataset/',
                         help='the training rgb images root')
-    parser.add_argument('--val_root', type=str, default='./dataset/TestDataset/CAMO/',
+    parser.add_argument('--val_root', type=str, default='../dataset/TestDataset/CAMO/',
                         help='the test rgb images root')
-    parser.add_argument('--gpu_id', type=str, default='1', 
+    parser.add_argument('--gpu_id', type=str, default='0', 
                         help='train use gpu')
     parser.add_argument('--save_path', type=str, default='./pytorch_lib/snapshot/Exp02/',
                         help='the path to save model and log')

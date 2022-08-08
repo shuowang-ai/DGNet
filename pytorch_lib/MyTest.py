@@ -1,4 +1,8 @@
 import os
+import sys
+PROJ_DIR = os.path.dirname(os.path.abspath(__file__))
+
+import os
 import torch
 import argparse
 import numpy as np
@@ -32,6 +36,8 @@ def evaluator(model, val_root, map_save_path, trainsize=352):
             output = output.sigmoid().data.cpu().numpy().squeeze()
             output = (output - output.min()) / (output.max() - output.min() + 1e-8)
 
+            output = np.uint8(output * 255)
+
             imageio.imwrite(map_save_path + name, output)
             print('>>> prediction save at: {}'.format(map_save_path + name))
 
@@ -39,14 +45,14 @@ def evaluator(model, val_root, map_save_path, trainsize=352):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', type=str, default='DGNet', choices=['DGNet', 'DGNet-S'])
-    parser.add_argument('--snap_path', type=str, default='snapshots/DGNet/Net_epoch_best.pth',
+    parser.add_argument('--snap_path', type=str, default=os.path.join(PROJ_DIR, 'snapshots/DGNet/Net_epoch_best.pth'),
                         help='train use gpu')
     parser.add_argument('--gpu_id', type=str, default='0',
                         help='train use gpu')
     opt = parser.parse_args()
 
     now = datetime.now()
-    txt_save_path = '/cluster/work/cvl/shuowang/data/cv/dgnet/{}/{}/'.format(str(now)[:19], opt.snap_path.split('/')[-2])
+    txt_save_path = '/cluster/work/cvl/shuowang/results/cv/dgnet/{}/{}'.format(str(now)[:19], opt.snap_path.split('/')[-2])
     os.makedirs(txt_save_path, exist_ok=True)
 
     print('>>> configs:', opt)
@@ -83,6 +89,6 @@ if __name__ == '__main__':
         os.makedirs(map_save_path, exist_ok=True)
         evaluator(
             model=model,
-            val_root='../dataset/TestDataset/' + data_name + '/',
+            val_root='/cluster/work/cvl/shuowang/data/cv/dgnet/dataset/TestDataset/' + data_name + '/',
             map_save_path=map_save_path,
             trainsize=352)
