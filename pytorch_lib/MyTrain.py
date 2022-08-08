@@ -1,6 +1,12 @@
 # author: Daniel-Ji (e-mail: gepengai.ji@gmail.com)
 # data: 2021-01-16
 # torch libraries
+
+import os
+import sys
+PROJ_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(PROJ_DIR)
+
 import os
 import logging
 import numpy as np
@@ -166,7 +172,7 @@ if __name__ == '__main__':
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--epoch', type=int, default=100, help='epoch number')
+    parser.add_argument('--epoch', type=int, default=1, help='epoch number')
     parser.add_argument('--lr', type=float, default=1e-4, help='learning rate')
     parser.add_argument('--batchsize', type=int, default=12, help='training batch size')
     parser.add_argument('--trainsize', type=int, default=352, help='training dataset size')
@@ -175,14 +181,28 @@ if __name__ == '__main__':
     parser.add_argument('--decay_epoch', type=int, default=50, help='every n epochs decay learning rate')
     parser.add_argument('--model', type=str, default='DGNet', choices=['DGNet', 'DGNet-S'])
     parser.add_argument('--load', type=str, default=None, help='train from checkpoints')
-    parser.add_argument('--train_root', type=str, default='../dataset/TestDataset/',
+
+    # parser.add_argument('--train_root', type=str, default='../dataset/TestDataset/',
+    #                     help='the training rgb images root')
+    # parser.add_argument('--val_root', type=str, default='../dataset/TestDataset/CAMO/',
+    #                     help='the test rgb images root')
+
+    # /cluster/work/cvl/shuowang/data/cv/dgnet/dataset/TestDataset/
+    parser.add_argument('--train_root', type=str, default='/cluster/work/cvl/shuowang/data/cv/dgnet/dataset/TrainDataset/',
                         help='the training rgb images root')
-    parser.add_argument('--val_root', type=str, default='../dataset/TestDataset/CAMO/',
+    parser.add_argument('--val_root', type=str, default='/cluster/work/cvl/shuowang/data/cv/dgnet/dataset/TestDataset/CAMO/',
                         help='the test rgb images root')
+
     parser.add_argument('--gpu_id', type=str, default='0', 
                         help='train use gpu')
-    parser.add_argument('--save_path', type=str, default='./pytorch_lib/snapshot/Exp02/',
+
+    # parser.add_argument('--save_path', type=str, default='./pytorch_lib/snapshot/Exp02/',
+    #                     help='the path to save model and log')
+    # /cluster/work/cvl/shuowang/code/cv/dgnet/checkpoint
+    now = datetime.now()
+    parser.add_argument('--save_path', type=str, default='/cluster/work/cvl/shuowang/code/cv/dgnet/checkpoint/snapshot/%s/Exp02/' % str(now)[:19],
                         help='the path to save model and log')
+
     opt = parser.parse_args()
 
     # set the device for training
@@ -213,6 +233,8 @@ if __name__ == '__main__':
     if opt.load is not None:
         model.load_state_dict(torch.load(opt.load))
         print('load model from ', opt.load)
+
+    model.cuda()
 
     optimizer = torch.optim.Adam(model.parameters(), opt.lr)
 
