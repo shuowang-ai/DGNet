@@ -151,6 +151,7 @@ dmypy.json
 *.swp
 .idea
 
+.vscode/
 
 /dataset/
 __MACOSX
@@ -158,4 +159,6 @@ dataset/TestDataset.zip
 dataset/TrainDataset.zip
 dataset/TrainDataset
 dataset/TestDataset
-pytorch_lib/snapshot/
+pytorch_lib/result/
+pytorch_lib/snapshots/
+pytorch_lib/snapshots.zip

@@ -14,9 +14,9 @@ from torch import optim
 from torchvision.utils import make_grid
 # customized libraries
 import eval.python.metrics as Measure
-from pytorch_lib.lib.DGNet import DGNet as Network
-from pytorch_lib.utils.utils import clip_gradient
-from pytorch_lib.utils.dataset import get_loader, test_dataset
+from lib.DGNet import DGNet as Network
+from utils.utils import clip_gradient
+from utils.dataset import get_loader, test_dataset
 
 
 def structure_loss(pred, mask):

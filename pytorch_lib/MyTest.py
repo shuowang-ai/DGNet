@@ -3,12 +3,15 @@ import torch
 import argparse
 import numpy as np
 from scipy import misc
+import imageio
+
+from datetime import datetime
 
 import torch.nn.functional as F
 import torch.backends.cudnn as cudnn
 
-from pytorch_lib.utils.dataset import test_dataset as EvalDataset
-from pytorch_lib.lib.DGNet import DGNet as Network
+from utils.dataset import test_dataset as EvalDataset
+from lib.DGNet import DGNet as Network
 
 
 def evaluator(model, val_root, map_save_path, trainsize=352):
@@ -29,20 +32,21 @@ def evaluator(model, val_root, map_save_path, trainsize=352):
             output = output.sigmoid().data.cpu().numpy().squeeze()
             output = (output - output.min()) / (output.max() - output.min() + 1e-8)
 
-            misc.imsave(map_save_path + name, output)
+            imageio.imwrite(map_save_path + name, output)
             print('>>> prediction save at: {}'.format(map_save_path + name))
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', type=str, default='DGNet', choices=['DGNet', 'DGNet-S'])
-    parser.add_argument('--snap_path', type=str, default='./snapshot/DGNet/Net_epoch_best.pth',
+    parser.add_argument('--snap_path', type=str, default='snapshots/DGNet/Net_epoch_best.pth',
                         help='train use gpu')
-    parser.add_argument('--gpu_id', type=str, default='1',
+    parser.add_argument('--gpu_id', type=str, default='0',
                         help='train use gpu')
     opt = parser.parse_args()
 
-    txt_save_path = './result/{}/'.format(opt.snap_path.split('/')[-2])
+    now = datetime.now()
+    txt_save_path = '/cluster/work/cvl/shuowang/data/cv/dgnet/{}/{}/'.format(str(now)[:19], opt.snap_path.split('/')[-2])
     os.makedirs(txt_save_path, exist_ok=True)
 
     print('>>> configs:', opt)
@@ -72,12 +76,13 @@ if __name__ == '__main__':
 
     model.load_state_dict(torch.load(opt.snap_path))
     model.eval()
+    model.cuda()
 
     for data_name in ['CAMO', 'COD10K', 'NC4K']:
         map_save_path = txt_save_path + "/{}/".format(data_name)
         os.makedirs(map_save_path, exist_ok=True)
         evaluator(
             model=model,
-            val_root='./dataset/TestDataset/' + data_name + '/',
+            val_root='../dataset/TestDataset/' + data_name + '/',
             map_save_path=map_save_path,
             trainsize=352)
